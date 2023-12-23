@@ -1,10 +1,11 @@
-import Button from 'react-bootstrap/Button';
 import Navbar from '../../widgets/Navbar/Navbar';
+import MyBreadcrumbs from '../../widgets/MyBreadcrumbs/MyBreadcrumbs';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-import Breadcrumb from 'react-bootstrap/Breadcrumb';
+// import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import testData from '../../data';
+import Loader from '../../widgets/Loader/Loader';
 
 interface RoadData {
     Roadid: number;
@@ -48,17 +49,21 @@ interface RoadData {
         }
       };
       console.log(data);
-
+      if (!data) {
+        return (
+          <Loader/>
+        );
+      }
     return (
         <div>
             <Navbar />
             <div className="container">
-            <Breadcrumb>
-                    <Breadcrumb.Item href="/">Главная</Breadcrumb.Item>
-                    <Breadcrumb.Item href="#" active>
-                        {data?.Name}
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+            <MyBreadcrumbs
+  paths={[
+    { label: 'Главная', url: '/' },
+    { label: data?.Name },
+  ]}
+/>
             <Container style={{ maxWidth: '800px', margin: '20px auto', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '2.5rem', margin: '0', fontWeight: 'bold', marginBottom: '20px' }}>{data?.Name}</h1>
 
@@ -90,9 +95,9 @@ interface RoadData {
                             <li>Число полос движения: {data?.Numberofstripes}</li>
                             <li>Разрешенная скорость: до {data?.Speed} км/ч</li>
                             <li>Стоимость проезда: {data?.Price} руб</li>
-                            <li style={{ textAlign: 'right' }}>
+                            {/* <li style={{ textAlign: 'right' }}>
                                 <Button variant="primary">Добавить</Button>
-                            </li>
+                            </li> */}
                         </ul>
                     </Col>
                 </Row>

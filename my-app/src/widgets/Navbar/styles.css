@@ -2,6 +2,27 @@
   background-color: rgb(248, 56, 56);
 }
 
+.auth-button {
+  margin-left: 10px; /* Пример стиля. Вы можете настроить под свои требования */
+  font-weight: bold;
+}
+.navbar-link.text-light,
+.navbar-link.login,
+.navbar-link.register {
+  text-decoration: none ;
+  margin-right: 15px; /* или любое другое значение, которое вам подходит */
+}
+.name {
+  @media (max-width: 991px) {
+    margin-right: 5%;
+  }
+} 
+
+.register {
+  @media (max-width: 991px) {
+    margin-left: 5%;
+  }
+}
 /* nav {
     background-color: #b81616;
     line-height: 3;
