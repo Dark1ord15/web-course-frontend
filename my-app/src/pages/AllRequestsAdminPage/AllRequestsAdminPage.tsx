@@ -225,12 +225,12 @@ const AllRequestsAdminPage = () => {
                                 <>
                                     <td>
                                         <Button variant="primary" onClick={() => { handleChangeStatus(request.Travelrequestid, 'completed') }}>
-                                            Закончить
+                                            Одобрить
                                         </Button>
                                     </td>
                                     <td>
                                         <Button variant="danger" onClick={() => { handleChangeStatus(request.Travelrequestid, 'rejected') }}>
-                                            Отменить
+                                            Отклонить
                                         </Button>
                                     </td>
                                 </>}

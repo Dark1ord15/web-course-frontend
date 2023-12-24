@@ -8,21 +8,30 @@ interface EditConsModalProps {
     handleClose: () => void;
     RoadId: number;
     fetchData: () => void;
-
+    consName : string;
+    consTrustmanagment : string;
+    consLenght : string;
+    consPaidlenght : string;
+    consCategory : string;
+    consNumberofstripes : string;
+    consSpeed : string;
+    consPrice : string;
+    consStartofsection : string;
+    consEndofsection : string;
   }
 
-const EditConsModal: React.FC<EditConsModalProps> = ({ show, handleClose, RoadId, fetchData }) => {
-    const [Name, setName] = useState("");
-    const [Trustmanagment, setTrustmanagment] = useState("");
-    const [Length, setLength] = useState("");
-    const [Paidlength, setPaidlength] = useState("");
-    const [Category, setCategory] = useState("");
-    const [Numberofstripes, setNumberofstripes] = useState("");
-    const [Speed, setSpeed] = useState("");
-    const [Price, setPrice] = useState("");
+const EditConsModal: React.FC<EditConsModalProps> = ({ show, handleClose, RoadId, fetchData, consName, consTrustmanagment, consLenght, consPaidlenght, consCategory, consNumberofstripes, consSpeed, consPrice, consStartofsection, consEndofsection}) => {
+    const [Name, setName] = useState(consName);
+    const [Trustmanagment, setTrustmanagment] = useState(consTrustmanagment);
+    const [Length, setLength] = useState(consLenght);
+    const [Paidlength, setPaidlength] = useState(consPaidlenght);
+    const [Category, setCategory] = useState(consCategory);
+    const [Numberofstripes, setNumberofstripes] = useState(consNumberofstripes);
+    const [Speed, setSpeed] = useState(consSpeed);
+    const [Price, setPrice] = useState(consPrice);
     const [Image, setImage] = useState<File | null>(null);
-    const [Startofsection, setStartofsection] = useState("");
-    const [Endofsection, setEndofsection] = useState("");
+    const [Startofsection, setStartofsection] = useState(consStartofsection);
+    const [Endofsection, setEndofsection] = useState(consEndofsection);
     const [error, setError] = useState<string | null>(null);
     
 
@@ -200,7 +209,7 @@ const EditConsModal: React.FC<EditConsModalProps> = ({ show, handleClose, RoadId
                     Закрыть
                 </Button>
                 <Button variant="primary" onClick={() => handleEdit(Name, parseInt(Trustmanagment), parseInt(Length), parseInt(Paidlength), Category, Numberofstripes, parseInt(Speed), parseInt(Price), Image, parseInt(Startofsection),parseInt(Endofsection) )}>
-                    Отправить
+                    Сохранить
                 </Button>
             </Modal.Footer>
         </Modal>

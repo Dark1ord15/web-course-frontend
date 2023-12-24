@@ -41,6 +41,17 @@ const TableMainPage: React.FC = () => {
     const minLenghtFilter = useSelector((state: RootState) => state.filterAndActiveId.minLenghtFilter);
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
     const [selectedRoadId, setSelectedRoadId] = useState(0);
+    const [selectedRoadName, setSelectedRoadName] = useState('')
+    const [selectedRoadTrustmanagment, setSelectedRoadTrustmanagment] = useState('')
+    const [selectedRoadLenght, setSelectedRoadLenght] = useState('')
+    const [selectedRoadPaidlenght, setSelectedRoadPaidlenght] = useState('')
+    const [selectedRoadCategory, setSelectedRoadCategory] = useState('')
+    const [selectedRoadNumberofstripes, setSelectedRoadNumberofstripes] = useState('')
+    const [selectedRoadSpeed, setSelectedRoadSpeed] = useState('')
+    const [selectedRoadPrice, setSelectedRoadPrice] = useState('')
+    const [selectedRoadStartofsection, setSelectedRoadStartofsection] = useState('')
+    const [selectedRoadEndofsection, setSelectedRoadEndofsection] = useState('')
+
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const fetchData = async () => {
@@ -66,9 +77,19 @@ const TableMainPage: React.FC = () => {
         }
     };
 
-    const handleEdit = (roadId: number) => {
+    const handleEdit = (roadId: number, name: string, trustmanagment: string, lenght: string, paidlenght: string, category: string, numberofstripes: string, speed: string, price: string, startofsection: string, endtofsection: string) => {
         setShowEditModal(true);
         setSelectedRoadId(roadId)
+        setSelectedRoadName(name)
+        setSelectedRoadTrustmanagment(trustmanagment.toString())
+        setSelectedRoadLenght(lenght.toString())
+        setSelectedRoadPaidlenght(paidlenght.toString())
+        setSelectedRoadCategory(category)
+        setSelectedRoadNumberofstripes(numberofstripes)
+        setSelectedRoadSpeed(speed.toString())
+        setSelectedRoadPrice(price.toString())
+        setSelectedRoadStartofsection(startofsection.toString())
+        setSelectedRoadEndofsection(endtofsection.toString())
         fetchData()
     }
 
@@ -108,7 +129,20 @@ const TableMainPage: React.FC = () => {
             const role = roleString ? parseInt(roleString) : 0;
             dispatch(setRole(role))
         }
-    }, [dispatch, minLenghtFilter]);
+        if (!showEditModal) {
+            setSelectedRoadId(0);
+            setSelectedRoadName('')
+            setSelectedRoadTrustmanagment('')
+            setSelectedRoadLenght('')
+            setSelectedRoadPaidlenght('')
+            setSelectedRoadCategory('')
+            setSelectedRoadNumberofstripes('')
+            setSelectedRoadSpeed('')
+            setSelectedRoadPrice('')
+            setSelectedRoadStartofsection('')
+            setSelectedRoadEndofsection('')
+        }
+    }, [dispatch, minLenghtFilter, showEditModal]);
 
     return (
         <div>
@@ -166,7 +200,7 @@ const TableMainPage: React.FC = () => {
                                             <td key={index}>{value as React.ReactNode}</td>;
                                     }
                                     )}
-                                    <td><Button variant="primary" onClick={() => { handleEdit(item.Roadid) }}>
+                                    <td><Button variant="primary" onClick={() => { handleEdit(item.Roadid, item.Name, item.Trustmanagment.toString(), item.Length.toString(), item.Paidlength.toString(), item.Category, item.Numberofstripes, item.Speed.toString(), item.Price.toString(), item.Startofsection.toString(), item.Endofsection.toString()) }}>
                                         Редактировать
                                     </Button></td>
                                     <td><Button variant="danger" onClick={() => { handleDelete(item.Roadid) }}>
@@ -179,7 +213,19 @@ const TableMainPage: React.FC = () => {
                     <Button className='add-cons' onClick={handleAdd}>
                         <img src={addImg} />
                     </Button>
-                    <EditConsModal show={showEditModal} handleClose={() => setShowEditModal(false)} RoadId={selectedRoadId} fetchData={fetchData} />
+                    { selectedRoadId > 0 ? <EditConsModal show={showEditModal} handleClose={() => setShowEditModal(false)} RoadId={selectedRoadId}
+                        fetchData={fetchData}
+                        consName={selectedRoadName}
+                        consTrustmanagment={selectedRoadTrustmanagment}
+                        consLenght={selectedRoadLenght}
+                        consPaidlenght={selectedRoadPaidlenght}
+                        consCategory={selectedRoadCategory}
+                        consNumberofstripes={selectedRoadNumberofstripes}
+                        consSpeed={selectedRoadSpeed}
+                        consPrice={selectedRoadPrice}
+                        consStartofsection={selectedRoadStartofsection}
+                        consEndofsection={selectedRoadEndofsection} />
+                                : null}
                     <CreateConsModal show={showCreateModal} handleClose={() => setShowCreateModal(false)} fetchData={fetchData} />
                 </div>}
         </div> 
