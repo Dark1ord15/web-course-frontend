@@ -10,7 +10,7 @@
     import MyBreadcrumbs from '../../widgets/MyBreadcrumbs/MyBreadcrumbs';
     import { useDispatch, useSelector } from 'react-redux';
     import { setActiveRequestID, setMinLenghtFilter } from '../../redux/filterAndActiveRequestID/actions';
-    import { loginSuccess, loginFailure } from '../../redux/auth/authSlice';
+    import { loginSuccess, loginFailure, setRole } from '../../redux/auth/authSlice';
     import { RootState } from '../../redux/store';
     import CartImg from '../../assets/cart-check-svgrepo-com.svg';
     import EmptyCartImg from '../../assets/cart-cross-svgrepo-com.svg'
@@ -92,6 +92,11 @@
             fetchData()
             if (window.localStorage.getItem("accessToken")) {
                 dispatch(loginSuccess())
+            }
+            if (window.localStorage.getItem("role")) {
+                const roleString = window.localStorage.getItem("role");
+                const role = roleString ? parseInt(roleString) : 0;
+                dispatch(setRole(role))
             }
         }, [dispatch, minLenghtFilter]);
 

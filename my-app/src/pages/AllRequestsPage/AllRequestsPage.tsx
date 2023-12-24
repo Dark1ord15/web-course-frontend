@@ -5,11 +5,10 @@ import { RootState } from '../../redux/store';
 import Navbar from '../../widgets/Navbar/Navbar';
 import Table from 'react-bootstrap/Table';
 import Loader from '../../widgets/Loader/Loader';
-
+import { loginSuccess, setRole } from '../../redux/auth/authSlice';
 const AllRequestsPage = () => {
   const dispatch = useDispatch();
   const requests = useSelector((state: RootState) => state.request.data);
-  const status = useSelector((state: RootState) => state.request.status);
 
   const formattedTime = (timestamp: string) => {
     if (timestamp.includes('0001-01-01')) {
@@ -26,9 +25,29 @@ const AllRequestsPage = () => {
 
     return formattedDate;
   };
-
+  const fetchData = async () => {
+    try {
+      await dispatch(getAllRequests());
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   useEffect(() => {
-    dispatch(getAllRequests());
+    fetchData();
+    if (window.localStorage.getItem("accessToken")) {
+      dispatch(loginSuccess())
+    }
+    if (window.localStorage.getItem("role")) {
+      const roleString = window.localStorage.getItem("role");
+      const role = roleString ? parseInt(roleString) : 0;
+      dispatch(setRole(role))
+    }
+    const pollingInterval = setInterval(() => {
+      fetchData();
+    }, 5000);
+    return () => {
+      clearInterval(pollingInterval);
+    };
   }, [dispatch]);
 
   if (!requests || requests.length === 0) {

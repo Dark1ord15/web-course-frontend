@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../widgets/Navbar/Navbar';
 import Table from 'react-bootstrap/Table';
