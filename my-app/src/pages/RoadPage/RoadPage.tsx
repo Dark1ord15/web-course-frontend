@@ -3,7 +3,7 @@ import MyBreadcrumbs from '../../widgets/MyBreadcrumbs/MyBreadcrumbs';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-// import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import axios from 'axios';
 import testData from '../../data';
 import Loader from '../../widgets/Loader/Loader';
 
@@ -24,31 +24,26 @@ interface RoadData {
   }
   const RoadPage: React.FC = () => {
     const { id } = useParams();
-    console.log(id)
+    let i = 0;
 
     const [data, setData] = useState<RoadData | null>(null);
 
     useEffect(() => {
-      // Выполняем запрос при монтировании компонента
+      console.log('ProductPage useEffect is triggered');
       fetchData();
-    }, []);
+    }, [id]);
 
 
     const fetchData = async () => {
         try {
-          const response = await fetch(`/api/roads/${id}`);
-          if (!response.ok) {
-            throw new Error(`Ошибка при выполнении запроса: ${response.statusText}`);
-          }
-    
-          const result = await response.json();
+          const response = await axios.get(`/api/roads/${id}`);
+          const result = await response?.data;
           setData(result);
         } catch (error) {
             setData(testData.roads[parseInt(id || '0', 10)-1])
           console.error('ошибка при выполнении запроса:', error);
         }
       };
-      console.log(data);
       if (!data) {
         return (
           <Loader/>

@@ -6,10 +6,11 @@ interface CartItemProps {
     Name: string;
     Price: number;
   };
-  onRemove: (removedItem: { Name: string; Price: number }) => void;
+  onRemove: (removedItem: { Name: string; Price: number }) => void; 
+  requestStatus: string;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, onRemove }) => {
+const CartItem: React.FC<CartItemProps> = ({ item, onRemove, requestStatus }) => {
     console.log('CartItem data:', item);
     
     const handleRemove = () => {
@@ -20,11 +21,12 @@ const CartItem: React.FC<CartItemProps> = ({ item, onRemove }) => {
       <tr>
         <td>{item.Name}</td>
         <td>{item.Price}</td>
+        {requestStatus == 'introduced' ?
         <td>
           <Button variant="danger" onClick={handleRemove}>
             Удалить
           </Button>
-        </td>
+        </td>: <> </>}
       </tr>
     );
   };

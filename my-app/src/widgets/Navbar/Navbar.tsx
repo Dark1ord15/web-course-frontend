@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import { Navbar as NavB } from 'react-bootstrap';
 // import { useState, useEffect } from 'react';
-// import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { logout } from '../../redux/auth/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 // import { setActiveRequestID, setMinLenghtFilter } from '../../redux/filterAndActiveRequestID/actions';
@@ -13,17 +13,18 @@ import { Link } from 'react-router-dom';
 const Navbar = () => {
   const dispatch = useDispatch();
   const minLenghtFilter = useSelector((state: RootState) => state.filterAndActiveId.minLenghtFilter);
-
+  const navigate = useNavigate()
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
 
     try {
       await dispatch(logout());
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error("Error during logout:", error);
     }
+    navigate("/")
   };
 
   return (

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllRequests } from '../../redux/request/requestActions';
 import { RootState } from '../../redux/store';
+import { Link } from 'react-router-dom';
 import Navbar from '../../widgets/Navbar/Navbar';
 import Table from 'react-bootstrap/Table';
 import Loader from '../../widgets/Loader/Loader';
@@ -71,6 +72,7 @@ const AllRequestsPage = () => {
               <th key={'Formationdate'}>Дата формирования</th>
               <th key={'Сomletiondate'}>Дата завершения</th>
               <th key={'Paidstatus'}>Статус оплаты</th>
+              <th key={'more'}>Подробнее</th>
             </tr>
           </thead>
           <tbody>
@@ -80,7 +82,7 @@ const AllRequestsPage = () => {
       const excludedIndices = [0, 1, 6];
       const timeRows = [3, 4, 5];
       const paymentStatusColumnIndex = 7;
-
+      
       if (excludedIndices.includes(columnIndex)) {
         return null;
       } else if (timeRows.includes(columnIndex)) {
@@ -94,7 +96,9 @@ const AllRequestsPage = () => {
       } else {
         return <td key={columnIndex}>{value as React.ReactNode}</td>;
       }
+      
     })}
+  <td><Link to={`/request/${request.Travelrequestid}`}>Подробнее</Link></td>
   </tr>
 ))}
           </tbody>

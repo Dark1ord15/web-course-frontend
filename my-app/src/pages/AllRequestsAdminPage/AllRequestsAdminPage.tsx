@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setStartDateFilter, setEndDateFilter, setStatusFilter, setUserFilter } from '../../redux/requestFilters/actions';
 import { RootState } from '../../redux/store';
 import Navbar from '../../widgets/Navbar/Navbar';
-import Loader from '../../widgets/Loader/Loader';
+// import Loader from '../../widgets/Loader/Loader';
+import { statusDictionary } from '../../status/status';
 import { Table, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios'
@@ -26,8 +27,14 @@ const AllRequestsAdminPage = () => {
     const endDate = useSelector((state: RootState) => state.requestFilters.endDate);
     const status = useSelector((state: RootState) => state.requestFilters.status);
     const user = useSelector((state: RootState) => state.requestFilters.user);
+    const [localUser, setLocalUser] = useState(user);
     const [requests, setRequests] = useState<Request[] | null>(null);
 
+    useEffect(()=> {
+        setLocalUser(user)
+        console.log(localUser)
+    },[user])
+    
     const formattedTime = (timestamp: string) => {
         if (timestamp.includes('0001-01-01')) {
             return "Не установлено";
@@ -45,7 +52,7 @@ const AllRequestsAdminPage = () => {
         return formattedDate
     };
 
-    const fetchData = async (startDate: string, endDate: string, status: string, user: string) => {
+    const fetchData = async (startDate: string, endDate: string, status: string) => {
         try {
             const url = `/api/travelrequests/?startDate=${startDate}&endDate=${endDate}&status=${status}`;
             let response
@@ -65,10 +72,16 @@ const AllRequestsAdminPage = () => {
 
 
             let result = await response.json();
-            if (user) {
-                result = result.filter((item: Request) => item.User.includes(user));
+            console.log(result)
+            console.log(user)
+            console.log(localUser)
+            let filteredResult = result
+            if (localUser != '') {
+                console.log('zxzzxxz')
+                filteredResult = result?.filter((item: Request) => item.User.includes(localUser)) || result
             }
-            setRequests(result);
+            console.log(filteredResult)
+            setRequests(filteredResult);
         } catch (error) {
             console.error('ошибка при выполнении запроса:', error);
         }
@@ -87,6 +100,7 @@ const AllRequestsAdminPage = () => {
     };
 
     const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLocalUser(e.target.value)
         dispatch(setUserFilter(e.target.value));
     };
 
@@ -102,7 +116,7 @@ const AllRequestsAdminPage = () => {
                     },
                 }
             );
-            fetchData(startDate, endDate, status, user)
+            fetchData(startDate, endDate, status)
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -113,26 +127,40 @@ const AllRequestsAdminPage = () => {
         dispatch(setEndDateFilter(''));
         dispatch(setStatusFilter(''));
         dispatch(setUserFilter(''));
-        fetchData(startDate, endDate, status, user)
+        setLocalUser('')
+        fetchData(startDate, endDate, status)
     }
 
     const fetchDataWithPolling = async () => {
         try {
-            fetchData(startDate, endDate, status, user);
+            fetchData(startDate, endDate, status);
         } catch (error) {
             console.error('Error fetching data with polling:', error);
         }
     };
+    useEffect(()=> {
+        fetchData(startDate, endDate, status);
+    }, [startDate, endDate, status])
 
     useEffect(() => {
-        fetchData(startDate, endDate, status, user);
+        if (localUser != "") {
+            const previos = requests
+            setRequests(requests?.filter((item: Request) => item.User.includes(localUser)) || previos);
+        }
+    }, [localUser])
+
+    useEffect(() => {
         const pollingInterval = setInterval(() => {
             fetchDataWithPolling();
-        }, 5000);
+        }, 2000);
         console.log('получил данные')
         return () => clearInterval(pollingInterval);
 
-    }, [dispatch, startDate, endDate, status, user]);
+    }, [startDate, endDate, status, localUser]);
+
+    // if (!requests) {
+    //     return <div><Navbar /> <Loader /></div>
+    // }
 
     return (
         <div>
@@ -157,13 +185,13 @@ const AllRequestsAdminPage = () => {
                         <select value={status} onChange={handleStatusChange}>
                             <option value="">Статус (все)</option>
                             <option key={"formed"} value={"formed"}>
-                                formed
+                                Сформирована
                             </option>
                             <option key={"rejected"} value={"rejected"}>
-                            rejected
+                            Отклонена
                             </option>
                             <option key={"completed"} value={"completed"}>
-                            completed
+                            Одобрена
                             </option>
                         </select>
                     </div>
@@ -187,7 +215,7 @@ const AllRequestsAdminPage = () => {
                         Сбросить фильтры
                     </Button>
                 </div>
-                {(!requests || requests.length === 0) ? <Loader /> :
+                {(!requests || requests.length === 0) ? <h1 className='small-h1' style={{ marginTop: '5%' }}>Нет данных, которые соответствуют фильтрам</h1> :
                     <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -200,6 +228,7 @@ const AllRequestsAdminPage = () => {
                                 <th key={'Paidstatus'}>Статус оплаты</th>
                                 <th key={'end'}>Закончить</th>
                                 <th key={'decline'}>Отменить</th>
+                                <th key={'more'}>Подробнее</th>
                                 {/* 1 3 4 7 8 9  0 2 5 6 */}
                             </tr>
                         </thead>
@@ -209,6 +238,7 @@ const AllRequestsAdminPage = () => {
                             {Object.values(request).map((value, index) => {
                                 const excludedIndices = [0];
                                 const timeRows = [3, 4, 5];
+                                if (index === 2) return <td key={index}>{statusDictionary[value as keyof typeof statusDictionary] as React.ReactNode}</td>
                                 return excludedIndices.includes(index) ? null :
                                     timeRows.includes(index) ? <td key={index}>{formattedTime(value as string) as React.ReactNode}</td> :
                                         <td key={index}>
@@ -221,6 +251,7 @@ const AllRequestsAdminPage = () => {
                                 <>
                                     <td>Заявка закончена</td>
                                     <td>Заявка закончена</td>
+                                    <td><Link to={`/request/${request.Travelrequestid}`}>Подробнее</Link></td>
                                 </> :
                                 <>
                                     <td>
@@ -233,6 +264,7 @@ const AllRequestsAdminPage = () => {
                                             Отклонить
                                         </Button>
                                     </td>
+                                    <td><Link to={`/request/${request.Travelrequestid}`}>Подробнее</Link></td>
                                 </>}
                         </tr>
                     ))}

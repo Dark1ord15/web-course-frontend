@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link} from 'react-router-dom';
 import { RootState } from '../../redux/store';
 import Navbar from '../../widgets/Navbar/Navbar';
 import Loader from '../../widgets/Loader/Loader';
@@ -11,9 +12,9 @@ import { loginSuccess, setRole } from '../../redux/auth/authSlice';
 import axios from 'axios';
 import MyBreadcrumbs from '../../widgets/MyBreadcrumbs/MyBreadcrumbs';
 import addImg from '../../assets/add-square-svgrepo-com.svg'
-import EditConsModal from '../../Modals/EditConsModal/EditConsModal';
+// import EditConsModal from '../../Modals/EditConsModal/EditConsModal';
 import './styles.css'
-import CreateConsModal from '../../Modals/CreateConsModal/CreateConsModal';
+// import CreateConsModal from '../../Modals/CreateConsModal/CreateConsModal';
 
 interface Data {
     requestID: number;
@@ -40,20 +41,7 @@ const TableMainPage: React.FC = () => {
     const dispatch = useDispatch();
     const minLenghtFilter = useSelector((state: RootState) => state.filterAndActiveId.minLenghtFilter);
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-    const [selectedRoadId, setSelectedRoadId] = useState(0);
-    const [selectedRoadName, setSelectedRoadName] = useState('')
-    const [selectedRoadTrustmanagment, setSelectedRoadTrustmanagment] = useState('')
-    const [selectedRoadLenght, setSelectedRoadLenght] = useState('')
-    const [selectedRoadPaidlenght, setSelectedRoadPaidlenght] = useState('')
-    const [selectedRoadCategory, setSelectedRoadCategory] = useState('')
-    const [selectedRoadNumberofstripes, setSelectedRoadNumberofstripes] = useState('')
-    const [selectedRoadSpeed, setSelectedRoadSpeed] = useState('')
-    const [selectedRoadPrice, setSelectedRoadPrice] = useState('')
-    const [selectedRoadStartofsection, setSelectedRoadStartofsection] = useState('')
-    const [selectedRoadEndofsection, setSelectedRoadEndofsection] = useState('')
-
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    
     const fetchData = async () => {
         console.log(minLenghtFilter)
         try {
@@ -77,21 +65,6 @@ const TableMainPage: React.FC = () => {
         }
     };
 
-    const handleEdit = (roadId: number, name: string, trustmanagment: string, lenght: string, paidlenght: string, category: string, numberofstripes: string, speed: string, price: string, startofsection: string, endtofsection: string) => {
-        setShowEditModal(true);
-        setSelectedRoadId(roadId)
-        setSelectedRoadName(name)
-        setSelectedRoadTrustmanagment(trustmanagment.toString())
-        setSelectedRoadLenght(lenght.toString())
-        setSelectedRoadPaidlenght(paidlenght.toString())
-        setSelectedRoadCategory(category)
-        setSelectedRoadNumberofstripes(numberofstripes)
-        setSelectedRoadSpeed(speed.toString())
-        setSelectedRoadPrice(price.toString())
-        setSelectedRoadStartofsection(startofsection.toString())
-        setSelectedRoadEndofsection(endtofsection.toString())
-        fetchData()
-    }
 
     const handleDelete = async (roadId: number) => {
         try {
@@ -109,10 +82,6 @@ const TableMainPage: React.FC = () => {
         }
     }
 
-    const handleAdd = async () => {
-        setShowCreateModal(true);
-        fetchData()
-    }
 
     const handleMinLenghtChange = (e: ChangeEvent<HTMLInputElement>) => {
         const minLenghtString = e.target.value !== '' ? parseInt(e.target.value).toString() : '';
@@ -129,20 +98,7 @@ const TableMainPage: React.FC = () => {
             const role = roleString ? parseInt(roleString) : 0;
             dispatch(setRole(role))
         }
-        if (!showEditModal) {
-            setSelectedRoadId(0);
-            setSelectedRoadName('')
-            setSelectedRoadTrustmanagment('')
-            setSelectedRoadLenght('')
-            setSelectedRoadPaidlenght('')
-            setSelectedRoadCategory('')
-            setSelectedRoadNumberofstripes('')
-            setSelectedRoadSpeed('')
-            setSelectedRoadPrice('')
-            setSelectedRoadStartofsection('')
-            setSelectedRoadEndofsection('')
-        }
-    }, [dispatch, minLenghtFilter, showEditModal]);
+    }, [dispatch, minLenghtFilter]);
 
     return (
         <div>
@@ -154,6 +110,7 @@ const TableMainPage: React.FC = () => {
                     { label: data?.Name },
                 ]}
                 />
+                <Link to="/">Сменить режим просмотра</Link>
                 <Form
                     className="d-flex justify-content-center mx-auto"
                     id="search"
@@ -200,9 +157,13 @@ const TableMainPage: React.FC = () => {
                                             <td key={index}>{value as React.ReactNode}</td>;
                                     }
                                     )}
-                                    <td><Button variant="primary" onClick={() => { handleEdit(item.Roadid, item.Name, item.Trustmanagment.toString(), item.Length.toString(), item.Paidlength.toString(), item.Category, item.Numberofstripes, item.Speed.toString(), item.Price.toString(), item.Startofsection.toString(), item.Endofsection.toString()) }}>
-                                        Редактировать
-                                    </Button></td>
+                                    <td>
+                                        <Link to={`roads/${item.Roadid}/edit`}>
+                                        <Button variant="primary">
+                                            Редактировать
+                                        </Button>
+                                        </Link>
+                                    </td>
                                     <td><Button variant="danger" onClick={() => { handleDelete(item.Roadid) }}>
                                         Удалить
                                     </Button></td>
@@ -210,23 +171,9 @@ const TableMainPage: React.FC = () => {
                             ))}
                         </tbody>
                     </Table>
-                    <Button className='add-cons' onClick={handleAdd}>
+                    <Link className='add-cons' to={"/roads/create"}>
                         <img src={addImg} />
-                    </Button>
-                    { selectedRoadId > 0 ? <EditConsModal show={showEditModal} handleClose={() => setShowEditModal(false)} RoadId={selectedRoadId}
-                        fetchData={fetchData}
-                        consName={selectedRoadName}
-                        consTrustmanagment={selectedRoadTrustmanagment}
-                        consLenght={selectedRoadLenght}
-                        consPaidlenght={selectedRoadPaidlenght}
-                        consCategory={selectedRoadCategory}
-                        consNumberofstripes={selectedRoadNumberofstripes}
-                        consSpeed={selectedRoadSpeed}
-                        consPrice={selectedRoadPrice}
-                        consStartofsection={selectedRoadStartofsection}
-                        consEndofsection={selectedRoadEndofsection} />
-                                : null}
-                    <CreateConsModal show={showCreateModal} handleClose={() => setShowCreateModal(false)} fetchData={fetchData} />
+                    </Link>
                 </div>}
         </div> 
     );

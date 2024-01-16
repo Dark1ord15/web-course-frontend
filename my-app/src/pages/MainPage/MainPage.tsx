@@ -5,7 +5,7 @@
     import Form from 'react-bootstrap/Form';
     import { ChangeEvent } from 'react';
     import { useState, useEffect } from 'react'
-    // import Breadcrumb from 'react-bootstrap/Breadcrumb';
+    import axios from 'axios';
     import testData from '../../data';
     import MyBreadcrumbs from '../../widgets/MyBreadcrumbs/MyBreadcrumbs';
     import { useDispatch, useSelector } from 'react-redux';
@@ -13,8 +13,7 @@
     import { loginSuccess, loginFailure, setRole } from '../../redux/auth/authSlice';
     import { RootState } from '../../redux/store';
     import CartImg from '../../assets/cart-check-svgrepo-com.svg';
-    import EmptyCartImg from '../../assets/cart-cross-svgrepo-com.svg'
-    import axios from 'axios';
+    import EmptyCartImg from '../../assets/cart-cross-svgrepo-com.svg';
     import './MainPage.css'
 
     interface Data {
@@ -43,6 +42,7 @@
         const minLenghtFilter = useSelector((state: RootState) => state.filterAndActiveId.minLenghtFilter);
         const activeRequest = useSelector((state: RootState) => state.filterAndActiveId.activeRequestID);
         const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+        const role = useSelector((state: RootState) => state.auth.role);
         const fetchData = async () => {
             console.log(minLenghtFilter);
             try {
@@ -55,13 +55,9 @@
                     headers.Authorization = `Bearer ${accessToken}`;
                 }
         
-                const response = await fetch(url, { headers });
+                const response = await axios.get(url, { headers });
         
-                if (!response.ok) {
-                    throw new Error(`Ошибка при выполнении запроса: ${response.statusText}`);
-                }
-        
-                const result = await response.json();
+                const result = await response?.data;
                 localStorage.setItem("ActiveRequestId", result?.requestID?.toString() || '');
                 dispatch(setActiveRequestID(result?.requestID));
                 console.log(result); // Проверьте, что данные приходят корректно
@@ -110,6 +106,7 @@
         { label: data?.Name },
     ]}
     />
+    {role > 0 ? <Link to="/main-page/admin">Сменить режим просмотра</Link> : null}
     <Form
         className="d-flex justify-content-center mx-auto"
         id="search"
@@ -127,7 +124,7 @@
 
                     <div className="row">
                         {data?.roads?.map((item) => (
-                            <div key={item.Roadid} className="col-lg-4 col-md-4 col-sm-12">
+                            <div key={item.Roadid} className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                                 <Card
                                     id={item.Roadid}
                                     name={item.Name}
@@ -140,7 +137,7 @@
                     </div>
                     {isAuthenticated ?
                         activeRequest ?
-                            <Link className='cart' to='/shopping-cart'>
+                        <Link className='cart' to={`/request/${activeRequest}`}>
                                 <img src={CartImg} />
                             </Link> :
                             <Link className='cart empty' to='/shopping-cart' >
